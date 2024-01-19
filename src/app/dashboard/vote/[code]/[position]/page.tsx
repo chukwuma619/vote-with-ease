@@ -5,9 +5,9 @@ export default function PositionPage() {
     return (
 
         <>
-            <div className="h-full w-full flex flex-col gap-8 justify-start items-center">
-                <h1 className="text-gray-900 text-3xl mt-4 font-bold leading-none">Choose your President</h1>
-                <form className="flex flex-col md:flex-row flex-wrap w-full items-center justify-center gap-6">
+            <div className="h-full w-full flex flex-col p-4 gap-3 justify-start items-start">
+                <h1 className="text-gray-900 text-2xl mt-4 font-bold leading-none">Choose your President</h1>
+                <form className="flex flex-col md:flex-row flex-wrap w-full mt-4 gap-6">
                     <label htmlFor="1" className="flex p-4 bg-gray-50 border border-gray-200 md:min-w-96 shadow rounded-lg justify-between items-center">
                         <div className="flex gap-2 items-center">
                             <div className="inline-flex items-center justify-center text-center relative rounded">
@@ -64,8 +64,10 @@ export default function PositionPage() {
                         <input type="radio" name="pres" id="4" className="w w-6 h-6 accent-green-700" />
                     </label>
 
-                    <div className="w-full flex items-center justify-center">
-                        <button type="submit" className="py-2 px-3 md:px-5 md:py-2.5 text-xs md:text-base rounded font-medium bg-green-700 hover:bg-green-600 text-white">Vote Candidate</button>
+                    <div className="w-full flex justify-end items-center">
+                        <button type="submit" className="inline-flex items-center justify-center text-center font-medium relative focus:z-10 focus:outline-none bg-green-700 hover:bg-green-600 focus-visible:outline-2 text-white focus-visible:outline-offset-2 focus-visible:outline-green-600 py-2.5 px-7 text-sm rounded-lg">
+                            Vote Candidate
+                        </button>
                     </div>
 
 

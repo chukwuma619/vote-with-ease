@@ -3,7 +3,7 @@ export default function CreateElection() {
         <>
             <div className="h-full w-full flex flex-col p-4 gap-3 justify-start items-start">
                 <h1 className="text-gray-900 text-2xl mt-4 font-bold leading-none">Create an election</h1>
-                <form className="space-y-5 w-full  max-w-[60%] rounded-lg border p-4 h-full">
+                <form className="space-y-5 w-full shadow max-w-[60%] rounded-lg border p-4">
                     <div className="space-y-2">
                         <label htmlFor="election-title" className="block text-sm font-medium leading-6 text-gray-900">Election title</label>
                         <div className="relative shadow-sm">
@@ -28,9 +28,11 @@ export default function CreateElection() {
 
 
 
-                    <button className="flex w-full items-center justify-center text-center font-medium relative focus:z-10 focus:outline-none bg-green-700 hover:bg-green-600 focus-visible:outline-2 text-white focus-visible:outline-offset-2 focus-visible:outline-green-600 py-2.5 px-5 text-sm rounded-lg">
-                        Create
-                    </button>
+                    <div className="w-full flex justify-end items-center">
+                        <button type="submit" className="inline-flex items-center justify-center text-center font-medium relative focus:z-10 focus:outline-none bg-green-700 hover:bg-green-600 focus-visible:outline-2 text-white focus-visible:outline-offset-2 focus-visible:outline-green-600 py-2.5 px-7 text-sm rounded-lg">
+                            Create
+                        </button>
+                    </div>
 
                 </form>
             </div>
