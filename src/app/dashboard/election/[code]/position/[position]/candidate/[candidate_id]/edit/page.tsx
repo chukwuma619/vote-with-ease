@@ -6,7 +6,7 @@ export default function CandidateCreatePage() {
         <>
 
             <div className="h-full w-full flex flex-col p-4 gap-3 justify-start items-start">
-                <h1 className="text-gray-900 text-2xl mt-4 font-bold leading-none">Edit Candidate</h1>
+                <h1 className="text-gray-900 text-2xl font-bold leading-none">Edit Candidate</h1>
 
                 <form className="space-y-5 w-full shadow max-w-[60%] rounded-lg border p-4">
                     <div className="space-y-2">

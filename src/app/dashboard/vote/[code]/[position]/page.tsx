@@ -5,8 +5,8 @@ export default function PositionPage() {
     return (
 
         <>
-            <div className="h-full w-full flex flex-col p-4 gap-3 justify-start items-start">
-                <h1 className="text-gray-900 text-2xl mt-4 font-bold leading-none">Choose your President</h1>
+            <div className="h-full w-full flex flex-col  gap-3 justify-start items-start">
+                <h1 className="text-gray-900 text-2xl font-bold leading-none">Choose your President</h1>
                 <form className="flex flex-col md:flex-row flex-wrap w-full mt-4 gap-6">
                     <label htmlFor="1" className="flex p-4 bg-gray-50 border border-gray-200 md:min-w-96 shadow rounded-lg justify-between items-center">
                         <div className="flex gap-2 items-center">

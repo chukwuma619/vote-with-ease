@@ -1,17 +1,12 @@
+import Header from "@/app/dashboard/components/header";
 import Link from "next/link"
 import { FaPencil, FaTrash, FaEye, FaUser } from "react-icons/fa6";
 
 export default function AllVotersPage() {
     return (
         <>
-            <div className="h-full w-full flex flex-col p-4 gap-3 justify-start items-start">
-                <div className="w-full">
-                    <div className="flex justify-between items-center w-full">
-                        <h1 className="text-gray-900 text-2xl mt-4 font-bold leading-none">Eligible Voters</h1>
-                        <Link href={'/dashboard/election/123456/voters/create'} className="py-2 px-5 rounded-lg inline-flex text-sm items-center justify-center text-white gap-3 font-medium bg-green-700 hover:bg-green-600">Add</Link>
-                    </div>
-                    <hr className="mt-2" />
-                </div>
+            <div className="h-full w-full flex flex-col gap-3 justify-start items-start">
+                <Header heading_text="Eligible Voters" buttton_text="Add" href={'/dashboard/election/123456/voters/create'} />
 
                 <table className="min-w-full divide-y">
                     <thead>

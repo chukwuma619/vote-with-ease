@@ -1,9 +1,9 @@
 export default function CreateElection() {
     return (
         <>
-            <div className="h-full w-full flex flex-col p-4 gap-3 justify-start items-start">
-                <h1 className="text-gray-900 text-2xl mt-4 font-bold leading-none">Create an election</h1>
-                <form className="space-y-5 w-full shadow max-w-[60%] rounded-lg border p-4">
+            <div className="h-full w-full flex flex-col gap-3 justify-start items-start">
+                <h1 className="text-gray-900 text-2xl font-bold leading-none">Create an election</h1>
+                <form className="space-y-5 w-full shadow md:max-w-[60%] rounded-lg border p-4">
                     <div className="space-y-2">
                         <label htmlFor="election-title" className="block text-sm font-medium leading-6 text-gray-900">Election title</label>
                         <div className="relative shadow-sm">
