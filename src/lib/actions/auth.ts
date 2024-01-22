@@ -76,8 +76,22 @@ export async function signUpUser(prevState: State, formData: FormData) {
   if (error) return { message: error.message };
 }
 
+export type LoginState =
+  | {
+      errors: {
+        email?: string[] | undefined;
+        password?: string[] | undefined;
+      };
+      message?: undefined;
+    }
+  | {
+      message: string;
+      errors?: undefined;
+    }| undefined;
+
+const LoginSchema = UserSchema.omit({name:true})
 export async function signInUser(
-  prevState: string | undefined,
+  prevState: LoginState,
   formData: FormData
 ) {
   "use server";
@@ -102,12 +116,26 @@ export async function signInUser(
     }
   );
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: "example@email.com",
-    password: "example-password",
+  const validatedFields = LoginSchema.safeParse({
+    email: formData.get("email"),
+    password: formData.get("password"),
   });
 
-  if (error) return error.message;
+  // If form validation fails, return errors early. Otherwise, continue.
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+    };
+  }
+
+  const {email, password} = validatedFields.data
+
+  const { error } = await supabase.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
+
+  if (error) return { message: error.message };
 }
 
 export async function signOutUser() {
@@ -134,4 +162,5 @@ export async function signOutUser() {
   );
 
   const { error } = await supabase.auth.signOut({ scope: "local" });
+  if (error) return { message: error.message };
 }

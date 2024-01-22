@@ -4,6 +4,7 @@ import { IoArrowBackOutline, IoMenu, IoClose } from "react-icons/io5";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import SidebarData from "@/data/sidebar";
+import { signOutUser } from "@/lib/actions/auth";
 
 
 export default function DashboardLayout({ children,
@@ -42,9 +43,12 @@ export default function DashboardLayout({ children,
                                 })}
                             </ul>
                         </nav>
-                        <button className="text-sm font-medium text-red-500 rounded-md p-2 flex hover:bg-gray-100">
-                            Logout
-                        </button>
+                        <form action={signOutUser}>
+                            <button className="text-sm font-medium text-red-500 rounded-md p-2 flex hover:bg-gray-100">
+                                Logout
+                            </button>
+                        </form>
+
                     </div>
 
                     <div className="h-full w-full flex items-start justify-end backdrop-blur-sm lg:hidden pr-4 pt-2">
