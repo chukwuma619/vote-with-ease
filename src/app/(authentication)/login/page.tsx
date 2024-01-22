@@ -25,7 +25,7 @@ export default function LoginPage() {
                 <div className="space-y-2">
                     <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">Email</label>
                     <div className="relative shadow-sm">
-                        <input type="email" name="email" id="email" autoComplete="email" autoFocus className="block w-full rounded-lg border-0 px-4 py-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6 focus-visible:outline-none" placeholder="name@example.com" />
+                        <input type="email" name="email" id="email" autoComplete="email" autoFocus className="block w-full rounded-lg border-0 px-4 py-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6 focus-visible:outline-none" placeholder="name@example.com" required />
                     </div>
                     <div aria-live="polite" aria-atomic="true" className="space-y-2">
                         {errorMessage?.errors?.email && errorMessage.errors.email.map((msg, index) => {
@@ -39,7 +39,7 @@ export default function LoginPage() {
                 <div className="space-y-2">
                     <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">Paswword</label>
                     <div className="relative shadow-sm">
-                        <input type="password" name="password" id="password" autoComplete="current-password" className="block w-full rounded-lg border-0 px-4 py-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6 focus-visible:outline-none" placeholder="••••••••••" />
+                        <input type="password" name="password" id="password" autoComplete="current-password" className="block w-full rounded-lg border-0 px-4 py-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6 focus-visible:outline-none" placeholder="••••••••••" required />
                     </div>
                     <div aria-live="polite" aria-atomic="true" className="space-y-2">
                         {errorMessage?.errors?.password && errorMessage.errors.password.map((msg, index) => {
