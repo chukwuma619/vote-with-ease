@@ -1,22 +1,16 @@
-import React, { ButtonHTMLAttributes } from 'react';
-import buttonTheme from '@/themes/button';
-export default function Button({
-    children,
-    size = "base",
-    color = 'primary',
-    colorType = "normal",
-    radius = "rounded",
-    ...rest
-}: {
-    children: React.ReactNode
-    size?: keyof buttonProps['size']
-    color: keyof buttonProps["color"]
-    colorType?: keyof coloType,
-    radius?: keyof buttonProps['radius']
-}& ButtonHTMLAttributes<HTMLButtonElement>) {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    children: React.ReactNode;
+  }
+  
+  export function Button({ children, className, ...rest }: ButtonProps) {
     return (
-        <button className={`${buttonTheme.base} ${buttonTheme.size[size]} ${buttonTheme.color[color][colorType]} ${buttonTheme.radius[radius]}`}>
-            {children}
-        </button>
-    )
-}
+      <button
+        {...rest}
+        className={
+          `flex items-center justify-center text-center font-medium relative focus:z-10 focus:outline-none bg-green-700 hover:bg-green-600 focus-visible:outline-2 text-white focus-visible:outline-offset-2 focus-visible:outline-green-600 py-3 px-7 text-sm rounded-lg aria-disabled:cursor-not-allowed aria-disabled:opacity-50 ${className}`}
+      >
+        {children}
+      </button>
+    );
+  }
+  

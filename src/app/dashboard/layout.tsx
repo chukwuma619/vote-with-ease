@@ -27,7 +27,7 @@ export default function DashboardLayout({ children,
         </header>
 
             <div className="container mx-auto">
-                <aside className={`${isNavOpen ? "translate-x-0" : "-translate-x-full"} ease-linear duration-300 z-50 w-full lg:translate-x-0 inline-flex inset-y-0 fixed min-h-svh border`}>
+                <aside className={`${isNavOpen ? "translate-x-0" : "-translate-x-full"} ease-linear duration-300 z-50 w-full lg:w-auto lg:translate-x-0 inline-flex inset-y-0 fixed min-h-svh border`}>
                     <div className="w-72 flex flex-col justify-between shrink-0 bg-white h-full p-6">
                         <nav className="space-y-8">
                             <Link href={'/'} className="font-semibold text-2xl">Vote<span className="text-green-700">Ease</span></Link>
@@ -55,7 +55,7 @@ export default function DashboardLayout({ children,
                     </div>
 
                 </aside>
-                <main className="lg:ml-72 w-full p-4 lg:p-10 bg-gray-50  min-h-svh relative">
+                <main className="lg:ml-72 p-4 lg:p-10 bg-gray-50  min-h-svh relative">
                     <button onClick={() => { router.back() }} aria-label="Go back" className="group mb-4 md:ml-6 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md shadow-gary-800/5 ring-1 ring-gray-900/5 transition">
                         <IoArrowBackOutline className="h-4 w-4 stroke-gray-500 transition group-hover:stroke-gray-700" />
                     </button>
