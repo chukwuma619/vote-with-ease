@@ -1,3 +1,6 @@
+'use client'
+import { useFormStatus } from "react-dom";
+
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     children: React.ReactNode;
   }
@@ -13,4 +16,13 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
       </button>
     );
   }
-  
+
+export  function FormButton({children}:{children: React.ReactNode}) {
+    const { pending } = useFormStatus();
+    return (
+        <Button className="w-full" aria-disabled={pending} >
+            {children}
+        </Button>
+    )
+
+}

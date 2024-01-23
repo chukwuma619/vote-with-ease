@@ -3,8 +3,7 @@ import Link from "next/link";
 import { FaCircleExclamation } from "react-icons/fa6";
 import { useFormState } from "react-dom";
 import { signUpUser } from "@/lib/actions/auth";
-import AuthButton from "../components/button";
-
+import { FormButton } from "@/components/button";
 export default function RegisterPage() {
     const initialState = { message: undefined, errors: {} };
     const [errorMessage, dispatch] = useFormState(signUpUser, initialState);
@@ -70,9 +69,9 @@ export default function RegisterPage() {
                     </div>
                 </div>
 
-                <AuthButton>
+                <FormButton>
                     Create account
-                </AuthButton>
+                </FormButton>
 
                 <p className="text-gray-900 text-sm font-medium">Already have an account? <Link href={"#"} className="text-green-600">Sign in</Link></p>
             </form>

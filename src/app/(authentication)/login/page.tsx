@@ -1,8 +1,9 @@
+'use client'
 import Link from "next/link";
 import { useFormState } from "react-dom";
 import { signInUser } from "@/lib/actions/auth";
 import { FaCircleExclamation } from "react-icons/fa6";
-import AuthButton from "../components/button";
+import {FormButton} from "@/components/button";
 export default function LoginPage() {
     const initialState = { message: undefined, errors: {} };
     const [errorMessage, dispatch] = useFormState(signInUser, initialState);
@@ -54,9 +55,9 @@ export default function LoginPage() {
                     <Link href={'#'} className="font-medium text-sm text-green-600" >Forgot password?</Link>
                 </div>
 
-                <AuthButton>
+                <FormButton>
                     Sign in
-                </AuthButton>
+                </FormButton>
 
                 <p className="text-gray-900 text-sm font-medium">Already have an account? <Link href={"#"} className="text-green-600">Sign up</Link></p>
             </form>
