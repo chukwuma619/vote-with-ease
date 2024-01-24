@@ -50,7 +50,7 @@ export async function fetchPositionByElectionUniqueCode({
     if (election) {
       let { data: positions, error } = await supabase
         .from("positions")
-        .select("*")
+        .select("title")
         .eq("election_id", election.id);
       if (error) {
         console.error(error);
@@ -64,8 +64,8 @@ export async function fetchElectionByUniqueCodeAndPositionTitle({
   unique_code,
   title,
 }: {
-  unique_code: string,
-  title:string,
+  unique_code: string;
+  title: string;
 }) {
   noStore();
   const cookieStore = cookies();
@@ -93,16 +93,30 @@ export async function fetchElectionByUniqueCodeAndPositionTitle({
   } = await supabase.auth.getUser();
 
   if (user) {
-    let { data: election, error } = await supabase
+    let { data: election, error: ElectionError } = await supabase
       .from("elections")
-      .select("title, start_date, end_date, unique_code")
+      .select("id")
       .eq("unique_code", unique_code)
       .limit(1)
       .single();
 
-    if (error) {
-      console.error(error);
+    if (ElectionError) {
+      console.error(ElectionError);
       notFound();
-    } else return election;
+    }
+
+    let { data: position, error } = await supabase
+      .from("positions")
+      .select("*")
+      .match({ election_id: election?.id, title: title })
+      .limit(1)
+      .single();
+
+    if (ElectionError) {
+      console.error(ElectionError);
+      notFound();
+    } else if( !position ){
+      notFound()
+    } else return position;
   }
 }

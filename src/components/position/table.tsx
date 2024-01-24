@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { FaEye, FaPencil, FaTrash } from "react-icons/fa6";
+import { PositionType } from "@/types/database-subtype";
 
-export default function PositionTable() {
+type ExcludedPositionType = Omit<
+    PositionType,
+    "created_at" | "id" | "election_id"
+>;
+export default function PositionTable({ data, unique_code }: { data: ExcludedPositionType[] | undefined, unique_code: string }) {
     return (
         <table className="min-w-full divide-y">
             <thead>
@@ -19,28 +24,32 @@ export default function PositionTable() {
                 </tr>
             </thead>
             <tbody className="divide-y">
+                {data?.map((position, index) => {
+                    return (
+                        <tr key={index} className="text-left">
+                            <td className="pr-3 py-3.5 text-sm font-medium pl-4 md:pl-0 text-gray-900">{position.title}</td>
+                            <td className="text-nowrap text-sm md:table-cell pr-3 py-3.5 pl-4 md:pl-0 ">
+                                <Link href={`/dashboard/election/${unique_code}/position/${position.title}/candidate`} className="text-green-700">
+                                    <span className="sr-only">View Position</span>
+                                    <FaEye />
+                                </Link>
+                            </td>
+                            <td className="text-nowrap text-sm md:table-cell pr-3 py-3.5 pl-4 md:pl-0 ">
+                                <Link href={`/dashboard/election/${unique_code}/position/${position.title}/edit`} className="text-blue-700">
+                                    <span className="sr-only">Edit</span>
+                                    <FaPencil />
+                                </Link>
+                            </td>
+                            <td className="text-nowrap text-sm md:table-cell pr-3 py-3.5 pl-4 md:pl-0 ">
+                                <Link href="#" className="text-red-500">
+                                    <span className="sr-only">Delete</span>
+                                    <FaTrash />
+                                </Link>
+                            </td>
+                        </tr>
+                    )
+                })}
 
-                <tr className="text-left">
-                    <td className="pr-3 py-3.5 text-sm font-medium pl-4 md:pl-0 text-gray-900">Director of Humanitarian affairs</td>
-                    <td className="text-nowrap text-sm md:table-cell pr-3 py-3.5 pl-4 md:pl-0 ">
-                        <Link href="/dashboard/election/123456/position/Director of Humanitarian affairs/candidate" className="text-green-700">
-                            <span className="sr-only">View Position</span>
-                            <FaEye />
-                        </Link>
-                    </td>
-                    <td className="text-nowrap text-sm md:table-cell pr-3 py-3.5 pl-4 md:pl-0 ">
-                        <Link href="/dashboard/election/123456/position/Director of Humanitarian affairs/edit" className="text-blue-700">
-                            <span className="sr-only">Edit</span>
-                            <FaPencil />
-                        </Link>
-                    </td>
-                    <td className="text-nowrap text-sm md:table-cell pr-3 py-3.5 pl-4 md:pl-0 ">
-                        <Link href="#" className="text-red-500">
-                            <span className="sr-only">Delete</span>
-                            <FaTrash />
-                        </Link>
-                    </td>
-                </tr>
 
 
             </tbody>

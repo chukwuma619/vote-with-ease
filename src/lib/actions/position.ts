@@ -26,8 +26,7 @@ type State =
       message: string;
       errors?: undefined;
     };
-
-export async function creatPosition(
+export async function createPosition(
   unique_code: string,
   prevState: State | undefined,
   formData: FormData
@@ -71,7 +70,7 @@ export async function creatPosition(
   if (user) {
     let { data: election, error: elctionError } = await supabase
       .from("elections")
-      .select("id")
+      .select("id, user_id")
       .eq("unique_code", unique_code)
       .limit(1)
       .single();
@@ -96,13 +95,12 @@ export async function creatPosition(
       };
     }
 
-    revalidatePath(`/dashboard/election/${unique_code}/position/`);
     redirect(`/dashboard/election/${unique_code}/position/`);
   }
 }
 
 export async function updatePosition(
-  pos_title: string,
+  election_id: string,
   unique_code: string,
   prevState: State | undefined,
   formData: FormData
@@ -138,15 +136,15 @@ export async function updatePosition(
   }
 
   const { title } = validatedFields.data;
+  
 
-
-  const { error } = await supabase
-    .from("position")
+  const { data, error } = await supabase
+    .from("positions")
     .update({
       title: title,
     })
-    .eq("title", pos_title)
-    .select()
+    .eq("election_id", election_id)
+    .select();
 
   if (error) {
     console.error(error);
@@ -155,7 +153,6 @@ export async function updatePosition(
     };
   }
 
-  revalidatePath(`/dashboard/election/${unique_code}/position/`);
   redirect(`/dashboard/election/${unique_code}/position/`);
 }
 
