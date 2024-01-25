@@ -63,3 +63,10 @@ export function convertDateFormat(inputDate:string) {
 
   return newDateString;
 }
+
+export function decodeText(inputText:string) {
+  // Replace '%20' with a space globally in the inputText
+  var decodedText = inputText.replace(/%20/g, ' ');
+
+  return decodedText;
+}
