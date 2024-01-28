@@ -43,7 +43,7 @@ export const formatDateToLocal = (
   return formatter.format(date);
 };
 
-export function convertDateFormat(inputDate:string) {
+export function formatDateToDatetime(inputDate:string) {
   const inputDateObj = new Date(inputDate);
   
   // Check if the inputDate is a valid date
@@ -70,3 +70,6 @@ export function decodeText(inputText:string) {
 
   return decodedText;
 }
+
+
+

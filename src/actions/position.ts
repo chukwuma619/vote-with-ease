@@ -4,34 +4,15 @@ import { cookies } from "next/headers";
 import { z } from "zod";
 import { Database } from "@/types/database.types";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { generateRandomString } from "../utils";
+import { notFound, redirect } from "next/navigation";
 
-const ElectionSchema = z.object({
-  id: z.string(),
-  end_date: z.coerce
-    .date({
-      required_error: "Please select a date and time",
-      invalid_type_error: "That's not a date!",
-    })
-    .min(new Date(), { message: "End date cannot be less than today" }),
-  start_date: z.coerce
-    .date({
-      required_error: "Please select a date and time",
-      invalid_type_error: "That's not a date!",
-    })
-    .min(new Date(), { message: "Start date cannot be less than today" }),
-  title: z.string(),
+const PositionSchema = z.object({
+  title: z.string().min(1),
 });
-
-const CreateElection = ElectionSchema.omit({ id: true });
-const UpdateElection = ElectionSchema.omit({ id: true });
 
 type State =
   | {
       errors: {
-        end_date?: string[] | undefined;
-        start_date?: string[] | undefined;
         title?: string[] | undefined;
       };
       message?: undefined;
@@ -40,76 +21,7 @@ type State =
       message: string;
       errors?: undefined;
     };
-
-export async function creatElection(
-  prevState: State | undefined,
-  formData: FormData
-) {
-  const cookieStore = cookies();
-
-  const supabase = createServerClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          cookieStore.set({ name, value, ...options });
-        },
-        remove(name: string, options: CookieOptions) {
-          cookieStore.set({ name, value: "", ...options });
-        },
-      },
-    }
-  );
-
-  const validatedFields = CreateElection.safeParse({
-    end_date: formData.get("end_date"),
-    start_date: formData.get("start_date"),
-    title: formData.get("title"),
-  });
-
-
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-    };
-  }
-
-  const { start_date, title, end_date } = validatedFields.data;
-  const unique_code = generateRandomString();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (user) {
-    const { error } = await supabase
-      .from("elections")
-      .insert({
-        end_date: end_date.toISOString(),
-        title: title,
-        start_date: start_date.toISOString(),
-        user_id: user.id,
-        unique_code: unique_code,
-      })
-      .select();
-
-    if (error) {
-      console.error(error);
-      return {
-        message: error.message,
-      };
-    }
-
-    revalidatePath("/dashboard/election");
-    redirect("/dashboard/election");
-  }
-}
-
-export async function updateElection(
+export async function createPosition(
   unique_code: string,
   prevState: State | undefined,
   formData: FormData
@@ -134,9 +46,7 @@ export async function updateElection(
     }
   );
 
-  const validatedFields = UpdateElection.safeParse({
-    end_date: formData.get("end_date"),
-    start_date: formData.get("start_date"),
+  const validatedFields = PositionSchema.safeParse({
     title: formData.get("title"),
   });
 
@@ -146,33 +56,101 @@ export async function updateElection(
     };
   }
 
-  const { start_date, title, end_date } = validatedFields.data;
+  const { title } = validatedFields.data;
 
-  console.log(start_date, title, end_date);
-  
-  
-  const { error } = await supabase
-    .from("elections")
-    .update({
-      start_date: start_date.toISOString(),
-      title: title,
-      end_date: end_date.toISOString(),
-    })
-    .eq("unique_code", unique_code)
-    .select();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (error) {
-    console.error(error);
+  if (user) {
+    const { error } = await supabase
+      .from("positions")
+      .insert({
+        title: title,
+        election_unique_code: unique_code,
+      })
+      .select();
+
+    if (error) {
+      console.error(error);
+      return {
+        message: error.message,
+      };
+    }
+    revalidatePath(`/dashboard/election/${unique_code}/position/`);
+    redirect(`/dashboard/election/${unique_code}/position/`);
+  }
+}
+
+export async function updatePosition(
+  unique_code: string,
+  pos_title: string,
+  prevState: State | undefined,
+  formData: FormData
+) {
+  const cookieStore = cookies();
+
+  const supabase = createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          cookieStore.set({ name, value, ...options });
+        },
+        remove(name: string, options: CookieOptions) {
+          cookieStore.set({ name, value: "", ...options });
+        },
+      },
+    }
+  );
+
+  const validatedFields = PositionSchema.safeParse({
+    title: formData.get("title"),
+  });
+
+  if (!validatedFields.success) {
     return {
-      message: error.message,
+      errors: validatedFields.error.flatten().fieldErrors,
     };
   }
 
-  revalidatePath("/dashboard/election");
-  redirect("/dashboard/election");
+  const { title } = validatedFields.data;
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  let { data: election } = await supabase
+    .from("elections")
+    .select("*")
+    .eq("unique_code", unique_code)
+    .limit(1)
+    .single();
+  if (!election) return { message: "Election does not exist" };
+
+  if (user && election.user_id === user.id) {
+    const { data, error } = await supabase
+      .from("positions")
+      .update({
+        title: title,
+      })
+      .match({ title: pos_title, election_unique_code: unique_code })
+      .select();
+
+    if (error) {
+      console.error(error);
+      return {
+        message: error.message,
+      };
+    }
+  } else return { message: "You are not permitted" };
+  revalidatePath(`/dashboard/election/${unique_code}/position/`);
+  redirect(`/dashboard/election/${unique_code}/position/`);
 }
 
-export async function deleteElectionByUniqueCode(unique_code: string) {
+export async function deletePosition(unique_code: string, title: string) {
   const cookieStore = cookies();
 
   const supabase = createServerClient<Database>(
@@ -194,12 +172,15 @@ export async function deleteElectionByUniqueCode(unique_code: string) {
   );
 
   const { error } = await supabase
-    .from("elections")
+    .from("positions")
     .delete()
-    .eq(unique_code, unique_code);
+    .match({ title: title, election_unique_code: unique_code });
 
   if (error) {
     console.error(error);
     throw new Error(error.message);
   }
+
+  revalidatePath(`/dashboard/election/${unique_code}/position/`);
+  redirect(`/dashboard/election/${unique_code}/position/`);
 }

@@ -5,7 +5,7 @@ import { z } from "zod";
 import { Database } from "@/types/database.types";
 import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
-import { generateRandomString } from "../utils";
+import { generateRandomString } from "../lib/utils";
 import { randomUUID } from "crypto";
 
 const MAX_UPLOAD_SIZE = 1024 * 1024 * 3;
@@ -40,14 +40,13 @@ const CreateCandidateSchema = CadidateSchema.extend({
 });
 const UpdatePositionSchema = CadidateSchema.extend({
   avatar: z
-  .instanceof(File)
-  .refine((file) => {
-    return !file || file.size <= MAX_UPLOAD_SIZE;
-  }, "File size must be less than 3MB")
-  .refine((file) => {
-    return ACCEPTED_FILE_TYPES.includes(file.type);
-  }, "Only .jpg, .jpeg, .png and .webp formats are supported."),
-
+    .instanceof(File)
+    .refine((file) => {
+      return !file || file.size <= MAX_UPLOAD_SIZE;
+    }, "File size must be less than 3MB")
+    .refine((file) => {
+      return ACCEPTED_FILE_TYPES.includes(file.type);
+    }, "Only .jpg, .jpeg, .png and .webp formats are supported."),
 });
 
 type State =
@@ -66,7 +65,7 @@ type State =
     };
 export async function createCandidate(
   unique_code: string,
-  title: string,
+  pos_title: string,
   prevState: State | undefined,
   formData: FormData
 ) {
@@ -105,38 +104,23 @@ export async function createCandidate(
 
   const { name, dept, level, avatar } = validatedFields.data;
 
-  console.log(name, dept, level, avatar);
   const fileNAme = randomUUID() + "-" + avatar.name;
-
-  console.log(fileNAme);
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (user) {
-    let { data: election, error: ElectionError } = await supabase
-      .from("elections")
-      .select("id")
-      .eq("unique_code", unique_code)
-      .limit(1)
-      .single();
-
-    if (ElectionError || election == null) {
-      console.error(ElectionError);
-      notFound();
-    }
-
-    let { data: position, error: posErr } = await supabase
+    const { data: position, error: posErr } = await supabase
       .from("positions")
-      .select("id")
-      .match({ election_id: election?.id, title: title })
+      .select("*")
+      .match({ title: pos_title, election_unique_code: unique_code })
       .limit(1)
       .single();
 
-    if (posErr || position == null) {
+    if (posErr || !position) {
       console.error(posErr);
-      notFound();
+      return { message: "Error fetching position" };
     }
 
     const { data: dt, error: er } = await supabase.storage
@@ -145,19 +129,19 @@ export async function createCandidate(
 
     if (er) throw er;
 
-    const { data } = supabase.storage.from("avatars").getPublicUrl(fileNAme);
+    const { data: imagUrl } = supabase.storage
+      .from("avatars")
+      .getPublicUrl(fileNAme);
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from("candidates")
-      .insert([
-        {
-          full_name: name,
-          department: dept,
-          level: level,
-          photo_url: data.publicUrl,
-          position: position?.id!,
-        },
-      ])
+      .insert({
+        full_name: name,
+        position_id: position.id,
+        department: dept,
+        level: level,
+        photo_url: imagUrl.publicUrl,
+      })
       .select();
 
     if (error) {
@@ -167,13 +151,18 @@ export async function createCandidate(
       };
     }
 
-    redirect(`/dashboard/election/${unique_code}/position/${title}/candidate`);
+    revalidatePath(
+      `/dashboard/election/${unique_code}/position/${pos_title}/candidate`
+    );
+    redirect(
+      `/dashboard/election/${unique_code}/position/${pos_title}/candidate`
+    );
   }
 }
 
 export async function updateCandidate(
   unique_code: string,
-  title: string,
+  pos_title: string,
   cand_name: string,
   prevState: State | undefined,
   formData: FormData
@@ -211,86 +200,118 @@ export async function updateCandidate(
     };
   }
 
-  
-
   const { name, dept, level, avatar } = validatedFields.data;
 
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (user) {
-    let { data: election, error: ElectionError } = await supabase
-      .from("elections")
-      .select("id")
-      .eq("unique_code", unique_code)
-      .limit(1)
-      .single();
+  let { data: election } = await supabase
+    .from("elections")
+    .select("*")
+    .eq("unique_code", unique_code)
+    .limit(1)
+    .single();
+  if (!election) return { message: "Election does not exist" };
 
-    if (ElectionError || election == null) {
-      console.error(ElectionError);
-      notFound();
-    }
-
-    let { data: position, error: posErr } = await supabase
+  if (user && election.user_id === user.id) {
+    let { data: position, error } = await supabase
       .from("positions")
-      .select("id")
-      .match({ election_id: election?.id, title: title })
+      .select("*")
+      .match({ title: pos_title, election_unique_code: unique_code })
       .limit(1)
       .single();
 
-    if (posErr || position == null) {
-      console.error(posErr);
-      notFound();
-    }
-    
-    if (avatar) {
-      
-      const fileNAme = randomUUID() + "-" + avatar.name;
-      const { data: dt, error: er } = await supabase.storage
-        .from("avatars")
-        .upload(fileNAme, avatar);
-
-      if (er) throw er;
-
-      const { data } = supabase.storage.from("avatars").getPublicUrl(fileNAme);
-
-      const { error } = await supabase
-        .from("candidates")
-        .update({
-          full_name: name,
-          department: dept,
-          level: level,
-          photo_url: data.publicUrl,
-        })
-        .match({ position: position.id, full_name: cand_name })
-        .select();
-
-      if (error) {
-        console.error(error);
-        return {
-          message: error.message,
-        };
-      }
+    if (error || !position) {
+      console.error(error);
+      return { message: "Error fetching position" };
     } else {
-      const { error } = await supabase
+      let { error } = await supabase
         .from("candidates")
-        .update({
-          full_name: name,
-          department: dept,
-          level: level,
-        })
-        .match({ position: position.id, full_name: cand_name })
+        .update({ department: dept, full_name: name, level: level })
+        .match({ position_id: position.id, full_name: cand_name })
         .select();
 
       if (error) {
         console.error(error);
-        return {
-          message: error.message,
-        };
+        return { message: "Error updating candidate" };
       }
     }
 
-    redirect(`/dashboard/election/${unique_code}/position/${title}/candidate`);
+    redirect(
+      `/dashboard/election/${unique_code}/position/${pos_title}/candidate`
+    );
+  }
+}
+
+export async function deleteCandidate(
+  unique_code: string,
+  pos_title: string,
+  cand_name: string
+) {
+  const cookieStore = cookies();
+
+  const supabase = createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) {
+          return cookieStore.get(name)?.value;
+        },
+        set(name: string, value: string, options: CookieOptions) {
+          cookieStore.set({ name, value, ...options });
+        },
+        remove(name: string, options: CookieOptions) {
+          cookieStore.set({ name, value: "", ...options });
+        },
+      },
+    }
+  );
+
+  
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let { data: election } = await supabase
+    .from("elections")
+    .select("*")
+    .eq("unique_code", unique_code)
+    .limit(1)
+    .single();
+  if (!election) return { message: "Election does not exist" };
+
+  if (user && election.user_id === user.id) {
+    let { data: position, error } = await supabase
+      .from("positions")
+      .select("*")
+      .match({ title: pos_title, election_unique_code: unique_code })
+      .limit(1)
+      .single();
+
+      console.log(unique_code, pos_title, cand_name);
+    if (error || !position) {
+      console.error(error);
+      return { message: "Error fetching position" };
+    } else {
+      let { error } = await supabase
+        .from("candidates")
+        .delete()
+        .match({ position_id: position.id, full_name: cand_name });
+
+      if (error) {
+        console.error(error);
+        return { message: "Error deleting candidate" };
+      }
+    }
+
+    revalidatePath(
+      `/dashboard/election/${unique_code}/position/${pos_title}/candidate`
+    );
+    redirect(
+      `/dashboard/election/${unique_code}/position/${pos_title}/candidate`
+    );
   }
 }

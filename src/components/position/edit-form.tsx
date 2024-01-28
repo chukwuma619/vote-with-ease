@@ -3,10 +3,10 @@ import { FormButton } from "../button";
 import { useFormState } from "react-dom";
 import { FaCircleExclamation } from "react-icons/fa6";
 import { PositionType } from "@/types/database-subtype";
-import { updatePosition } from "@/lib/actions/position";
+import { updatePosition } from "@/actions/position";
 
-export default function PositionForm({ data, unique_code }: { data: PositionType | undefined, unique_code:string }) {
-    const updatePositionByElectionId = updatePosition.bind(null, data?.election_id!, unique_code);
+export default function PositionForm({ data }: { data: PositionType }) {
+    const updatePositionByElectionId = updatePosition.bind(null, data.election_unique_code, data.title);
     const initialState = { message: undefined, errors: {} };
     const [errorMessage, dispatch] = useFormState(updatePositionByElectionId, initialState)
     return (

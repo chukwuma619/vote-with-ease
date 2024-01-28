@@ -1,7 +1,7 @@
 'use client';
 
 import { useFormState } from "react-dom";
-import { createPosition } from "@/lib/actions/position";
+import { createPosition } from "@/actions/position";
 import { FaCircleExclamation } from "react-icons/fa6";
 import { FormButton } from "@/components/button";
 

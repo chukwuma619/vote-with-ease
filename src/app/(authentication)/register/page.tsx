@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { FaCircleExclamation } from "react-icons/fa6";
 import { useFormState } from "react-dom";
-import { signUpUser } from "@/lib/actions/auth";
+import { signUpUser } from "@/actions/auth";
 import { FormButton } from "@/components/button";
 export default function RegisterPage() {
     const initialState = { message: undefined, errors: {} };

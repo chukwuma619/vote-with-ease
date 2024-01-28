@@ -1,5 +1,5 @@
 import CandidateEditForm from "@/components/candidate/edit-form";
-import { fetchSingleCandidate } from "@/lib/data/candidate";
+import { fetchSingleCandidate } from "@/data/candidate";
 import { decodeText } from "@/lib/utils";
 
 

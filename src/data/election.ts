@@ -8,7 +8,7 @@ import { notFound } from "next/navigation";
 
 
 
-export async function fetchElectionbyUser() {
+export async function fetchAuthElections() {
     const cookieStore = cookies();
   
     const supabase = createServerClient<Database>(
@@ -36,7 +36,7 @@ export async function fetchElectionbyUser() {
     if (user) {
       let { data: elections, error } = await supabase
         .from("elections")
-        .select("title,unique_code,status")
+        .select("*")
         .eq("user_id", user.id);
       if (error) {
         console.error(error);
@@ -45,7 +45,7 @@ export async function fetchElectionbyUser() {
     }
   }
 
-export async function fetchElectionByUniqueCode({
+export async function fetchSingleElection({
     unique_code,
   }: {
     unique_code: string;
@@ -78,14 +78,14 @@ export async function fetchElectionByUniqueCode({
     if (user) {
       let { data: election, error } = await supabase
         .from("elections")
-        .select("title, start_date, end_date, unique_code")
+        .select("*")
         .eq("unique_code", unique_code)
         .limit(1)
         .single();
   
-      if (error) {
+      if (error || !election) {
         console.error(error);
-        notFound();
+        notFound()
 
       } else return election;
     }

@@ -5,11 +5,7 @@ import { Database } from "@/types/database.types";
 import { unstable_noStore as noStore } from "next/cache";
 import { notFound } from "next/navigation";
 
-export async function fetchPositionByElectionUniqueCode({
-  unique_code,
-}: {
-  unique_code: string;
-}) {
+export async function fetchVoters({ unique_code }: { unique_code: string }) {
   const cookieStore = cookies();
 
   const supabase = createServerClient<Database>(
@@ -35,37 +31,22 @@ export async function fetchPositionByElectionUniqueCode({
   } = await supabase.auth.getUser();
 
   if (user) {
-    let { data: election, error: elctionError } = await supabase
-      .from("elections")
-      .select("id")
-      .eq("unique_code", unique_code)
-      .limit(1)
-      .single();
+    let { data: eligible_voters, error } = await supabase
+      .from("eligible_voters")
+      .select("*")
+      .eq("election_unique_code", unique_code);
 
-    if (elctionError) {
-      console.error(elctionError);
-      notFound();
-    }
-
-    if (election) {
-      let { data: positions, error } = await supabase
-        .from("positions")
-        .select("title")
-        .eq("election_id", election.id);
-      if (error) {
-        console.error(error);
-        throw new Error(error.message);
-      } else return positions ? positions : [];
-    }
+    if (error) console.error(error);
+    else return eligible_voters ? eligible_voters : [];
   }
 }
 
-export async function fetchElectionByUniqueCodeAndPositionTitle({
+export async function fetchSingleVoter({
   unique_code,
-  title,
+  id,
 }: {
   unique_code: string;
-  title: string;
+  id: string;
 }) {
   noStore();
   const cookieStore = cookies();
@@ -93,30 +74,16 @@ export async function fetchElectionByUniqueCodeAndPositionTitle({
   } = await supabase.auth.getUser();
 
   if (user) {
-    let { data: election, error: ElectionError } = await supabase
-      .from("elections")
-      .select("id")
-      .eq("unique_code", unique_code)
-      .limit(1)
-      .single();
-
-    if (ElectionError) {
-      console.error(ElectionError);
-      notFound();
-    }
-
-    let { data: position, error } = await supabase
-      .from("positions")
+    let { data: eligible_voter, error } = await supabase
+      .from("eligible_voters")
       .select("*")
-      .match({ election_id: election?.id, title: title })
+      .match({ election_unique_code: unique_code, id: id })
       .limit(1)
       .single();
 
-    if (ElectionError) {
-      console.error(ElectionError);
+    if (error || !eligible_voter) {
+      console.error(error);
       notFound();
-    } else if( !position ){
-      notFound()
-    } else return position;
+    } else return eligible_voter;
   }
 }

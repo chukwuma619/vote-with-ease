@@ -1,17 +1,12 @@
 'use client'
 import { FormButton } from "../button";
 import { ElectionType } from "@/types/database-subtype";
-import { convertDateFormat } from "@/lib/utils";
+import { formatDateToDatetime } from "@/lib/utils";
 import { useFormState } from "react-dom";
-import { updateElection } from "@/lib/actions/election"
+import { updateElection } from "@/actions/election"
 import { FaCircleExclamation } from "react-icons/fa6";
-
-type ExcludedElectionType = Omit<
-    ElectionType,
-    "created_at" | "id" | "status" | "user_id"
->;
-export default function EditElectionForm({ data }: { data: ExcludedElectionType }) {
-    const now = convertDateFormat(new Date().toISOString())
+export default function EditElectionForm({ data }: { data:ElectionType }) {
+    const now = formatDateToDatetime(new Date().toISOString())
     const updateElectionByUniqueCode = updateElection.bind(null, data.unique_code);
     const initialState = { message: undefined, errors: {} };
     const [errorMessage, dispatch] = useFormState(updateElectionByUniqueCode, initialState)
@@ -50,7 +45,7 @@ export default function EditElectionForm({ data }: { data: ExcludedElectionType 
                 <div className="space-y-2">
                     <label htmlFor="start_date" className="block text-sm font-medium leading-6 text-gray-900">Start date/time</label>
                     <div className="relative shadow-sm">
-                        <input type="datetime-local" name="start_date" defaultValue={convertDateFormat(data.start_date)} min={now} id="start_date" className="block accent-green-600 rounded-lg w-full border-0 px-4 py-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6 focus-visible:outline-none" />
+                        <input type="datetime-local" name="start_date" defaultValue={formatDateToDatetime(data.start_date)} min={now} id="start_date" className="block accent-green-600 rounded-lg w-full border-0 px-4 py-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6 focus-visible:outline-none" />
                     </div>
                     <div aria-live="polite" aria-atomic="true" className="space-y-2">
                         {errorMessage?.errors?.start_date && errorMessage.errors.start_date.map((msg, index) => {
@@ -64,7 +59,7 @@ export default function EditElectionForm({ data }: { data: ExcludedElectionType 
                 <div className="space-y-2">
                     <label htmlFor="end_date" className="block text-sm font-medium leading-6 text-gray-900">End date/time</label>
                     <div className="relative shadow-sm">
-                        <input type="datetime-local" min={now} defaultValue={convertDateFormat(data.end_date)} name="end_date" id="end_date" className="block rounded-lg w-full border-0 px-4 py-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6 focus-visible:outline-none" />
+                        <input type="datetime-local" min={now} defaultValue={formatDateToDatetime(data.end_date)} name="end_date" id="end_date" className="block rounded-lg w-full border-0 px-4 py-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-green-600 sm:text-sm sm:leading-6 focus-visible:outline-none" />
                     </div>
                     <div aria-live="polite" aria-atomic="true" className="space-y-2">
                         {errorMessage?.errors?.end_date && errorMessage.errors.end_date.map((msg, index) => {

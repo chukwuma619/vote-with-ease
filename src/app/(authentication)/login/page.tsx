@@ -1,7 +1,7 @@
 'use client'
 import Link from "next/link";
 import { useFormState } from "react-dom";
-import { signInUser } from "@/lib/actions/auth";
+import { signInUser } from "@/actions/auth";
 import { FaCircleExclamation } from "react-icons/fa6";
 import {FormButton} from "@/components/button";
 export default function LoginPage() {

@@ -4,7 +4,7 @@ import { IoArrowBackOutline, IoMenu, IoClose } from "react-icons/io5";
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import SidebarData from "@/data/sidebar";
-import { signOutUser } from "@/lib/actions/auth";
+import { signOutUser } from "@/actions/auth";
 
 
 export default function DashboardLayout({ children,

@@ -1,7 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { FaPencil, FaTrash } from "react-icons/fa6";
 import { CandidateType } from "@/types/database-subtype";
+import { deleteCandidate } from "@/actions/candidate";
 
 export default function CandidateTable({
   data,
@@ -12,6 +15,9 @@ export default function CandidateTable({
   position_name: string;
   election_unique_code: string;
 }) {
+  function handleDelete(unique_code: string, title: string, cand_name: string) {
+    deleteCandidate(unique_code, title, cand_name);
+  }
   return (
     <table className="min-w-full divide-y">
       <thead>
@@ -70,10 +76,19 @@ export default function CandidateTable({
                 </Link>
               </td>
               <td className="text-nowrap text-sm md:table-cell pr-3 py-3.5 pl-4 md:pl-0 ">
-                <Link href="#" className="text-red-500">
+                <button
+                  onClick={() => {
+                    handleDelete(
+                      election_unique_code,
+                      position_name,
+                      candidate.full_name
+                    );
+                  }}
+                  className="text-red-500"
+                >
                   <span className="sr-only">Delete</span>
                   <FaTrash />
-                </Link>
+                </button>
               </td>
             </tr>
           );

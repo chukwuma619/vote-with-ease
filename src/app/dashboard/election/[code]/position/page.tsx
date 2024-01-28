@@ -1,9 +1,10 @@
 import Header from "@/app/dashboard/components/header";
 import PositionTable from "@/components/position/table";
-import { fetchPositionByElectionUniqueCode } from "@/lib/data/positions";
+import { fetchPositions } from "@/data/positions";
 export default async function PositionPage({ params }: { params: { code: string } }) {
 
-    const PositionData = await fetchPositionByElectionUniqueCode({ unique_code: params.code })
+    const PositionData = await fetchPositions({ unique_code: params.code })
+    
     return (
         <>
 

@@ -1,6 +1,6 @@
 "use client";
 import { FormButton } from "@/components/button";
-import { updateCandidate } from "@/lib/actions/candidate";
+import { updateCandidate } from "@/actions/candidate";
 import { CandidateType } from "@/types/database-subtype";
 import { useFormState } from "react-dom";
 import { FaCircleExclamation } from "react-icons/fa6";
