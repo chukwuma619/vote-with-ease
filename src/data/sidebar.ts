@@ -7,7 +7,7 @@ type SidebarLinkType = {
 const SidebarData: SidebarLinkType[] = [
     {
         name: "Home",
-        href: "/dashboard"
+        href: "/dashboard/home"
     },
     {
         name: "Vote",
